@@ -1,0 +1,14 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "d:\\unreal projects\\hecticstall\\hecticstall_unreal\\hecticstall\\source\\hecticstall\\hecticstall.cpp",
+        "ProvidedModule": "",
+        "PCH": "d:\\unreal projects\\hecticstall\\hecticstall_unreal\\hecticstall\\intermediate\\build\\win64\\x64\\hecticstalleditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.cpp20.inclorderunreal5_3.h.pch",
+        "Includes": [
+            "d:\\unreal projects\\hecticstall\\hecticstall_unreal\\hecticstall\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\hecticstall\\definitions.hecticstall.h",
+            "d:\\unreal projects\\hecticstall\\hecticstall_unreal\\hecticstall\\source\\hecticstall\\hecticstall.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

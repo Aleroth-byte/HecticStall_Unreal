@@ -1,0 +1,24 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "d:\\unreal projects\\hecticstall\\hecticstall_unreal\\hecticstall\\intermediate\\build\\win64\\unrealeditor\\inc\\hecticstall\\uht\\playercharacter.gen.cpp",
+        "ProvidedModule": "",
+        "PCH": "d:\\unreal projects\\hecticstall\\hecticstall_unreal\\hecticstall\\intermediate\\build\\win64\\x64\\hecticstalleditor\\development\\unrealed\\sharedpch.unrealed.project.valapi.cpp20.inclorderunreal5_3.h.pch",
+        "Includes": [
+            "d:\\unreal projects\\hecticstall\\hecticstall_unreal\\hecticstall\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\hecticstall\\definitions.hecticstall.h",
+            "d:\\unreal projects\\hecticstall\\hecticstall_unreal\\hecticstall\\source\\hecticstall\\player\\playercharacter.h",
+            "d:\\downloads\\ue_5.5\\engine\\source\\runtime\\engine\\classes\\gameframework\\character.h",
+            "d:\\downloads\\ue_5.5\\engine\\source\\runtime\\engine\\classes\\gameframework\\charactermovementreplication.h",
+            "d:\\downloads\\ue_5.5\\engine\\source\\runtime\\net\\core\\public\\net\\core\\nettoken\\nettokenexportcontext.h",
+            "d:\\downloads\\ue_5.5\\engine\\source\\runtime\\experimental\\iris\\core\\public\\iris\\serialization\\irisobjectreferencepackagemap.h",
+            "d:\\downloads\\ue_5.5\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\iriscore\\uht\\irisobjectreferencepackagemap.generated.h",
+            "d:\\downloads\\ue_5.5\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\charactermovementreplication.generated.h",
+            "d:\\downloads\\ue_5.5\\engine\\source\\runtime\\engine\\classes\\gameframework\\rootmotionsource.h",
+            "d:\\downloads\\ue_5.5\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\rootmotionsource.generated.h",
+            "d:\\downloads\\ue_5.5\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\character.generated.h",
+            "d:\\unreal projects\\hecticstall\\hecticstall_unreal\\hecticstall\\intermediate\\build\\win64\\unrealeditor\\inc\\hecticstall\\uht\\playercharacter.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

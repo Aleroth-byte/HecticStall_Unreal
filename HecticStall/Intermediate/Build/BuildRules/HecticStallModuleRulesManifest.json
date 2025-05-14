@@ -1,0 +1,8 @@
+{
+	"SourceFiles": [
+		"D:\\Unreal Projects\\HecticStall\\HecticStall_Unreal\\HecticStall\\Source\\HecticStall\\HecticStall.Build.cs",
+		"D:\\Unreal Projects\\HecticStall\\HecticStall_Unreal\\HecticStall\\Source\\HecticStall.Target.cs",
+		"D:\\Unreal Projects\\HecticStall\\HecticStall_Unreal\\HecticStall\\Source\\HecticStallEditor.Target.cs"
+	],
+	"EngineVersion": "5.5.4"
+}
