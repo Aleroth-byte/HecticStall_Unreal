@@ -1,9 +1,11 @@
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
+
+class UPauseMenuWidget;
+class AFoodItem;
 
 UCLASS()
 class HECTICSTALL_API APlayerCharacter : public ACharacter
@@ -18,7 +20,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -27,13 +29,34 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere) //Where the functions are
-	class UCameraComponent* Camera; //where the camera is called/exists
+	UPROPERTY(EditAnywhere)
+	class UCameraComponent* Camera;
 
-	void MoveForward(float InputValue); // Called when the player provides input on the "MoveForward" axis.
-	void MoveRight(float InputValue);// Called when the player provides input on the "MoveRight" axis.
-	void Turn(float InputValue);// Rotates the character left or right (yaw).
-	void LookUp(float InputValue);// Rotates the camera up or down (pitch).
-	void Interact();// Currently just logs "Object picked up!" to the output log — placeholder for future interaction logic.
+	UPROPERTY()
+	AFoodItem* HeldItem = nullptr;
 
+	UPROPERTY(EditAnywhere, Category = "Pickup")
+	float HoldDistance = 150.f;
+
+	void MoveForward(float InputValue);
+	void MoveRight(float InputValue);
+	void Turn(float InputValue);
+	void LookUp(float InputValue);
+	void Interact();
+	void PauseGame();
+	void TraceForFood();
+	void AttachFoodToCamera(AFoodItem* FoodItem);
+	void DropHeldItem();
+	void TraceForCustomer();
+
+
+	UPROPERTY(EditAnywhere, Category = "Food")
+	TSubclassOf<AFoodItem> HeldItemClass;
+
+	UPROPERTY(EditAnywhere, Category = "UI")
+	TSubclassOf<UPauseMenuWidget> PauseMenuWidgetClass;
+
+private:
+	UPROPERTY()
+	UPauseMenuWidget* PauseMenuInstance;
 };

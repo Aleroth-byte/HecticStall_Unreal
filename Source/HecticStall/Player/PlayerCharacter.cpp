@@ -1,57 +1,58 @@
-
 #include "HecticStall/Player/PlayerCharacter.h"
 #include "Camera/CameraComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Blueprint/UserWidget.h"
+#include "GameFramework/PlayerController.h"
+#include "HecticStall/Pause/PauseMenuWidget.h"
+#include "HecticStall/Food/FoodItem.h"
+#include "HecticStall/Customer/FoodCustomer.h"
 
-// Sets default values
 APlayerCharacter::APlayerCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera")); //What the camera is going to do
-	Camera->SetupAttachment(RootComponent); //Where the camera will go, to the player character
-	Camera->bUsePawnControlRotation = true; //Enables the Pawn Control rotation of the camera in the blueprint class to true
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Player Camera"));
+	Camera->SetupAttachment(RootComponent);
+	Camera->bUsePawnControlRotation = true;
+
+	HoldDistance = 150.f;
+	HeldItem = nullptr;
 }
 
-// Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
-// Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
-// Called to bind functionality to input
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayerCharacter::Interact);
 
+	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerCharacter::MoveRight);
+	PlayerInputComponent->BindAxis("TurnCamera", this, &APlayerCharacter::Turn);
+	PlayerInputComponent->BindAxis("LookUp", this, &APlayerCharacter::LookUp);
+	PlayerInputComponent->BindAction("Drop", IE_Pressed, this, &APlayerCharacter::DropHeldItem);
 
-	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerCharacter::MoveForward); // When the player presses W or S, the input value is passed to MoveForward(), which moves the character forward or backward.
-	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerCharacter::MoveRight);// When the player presses A or D, the input value is passed to MoveRight(), which moves the character left or right.
-	PlayerInputComponent->BindAxis("TurnCamera", this, &APlayerCharacter::Turn);// This controls yaw rotation, allowing the player to turn left or right by moving the mouse horizontally.
-	PlayerInputComponent->BindAxis("LookUp", this, &APlayerCharacter::LookUp);// This controls pitch rotation, allowing the player to look up or down by moving the mouse vertically.
 
+	PlayerInputComponent->BindAction("Pause", IE_Pressed, this, &APlayerCharacter::PauseGame);
 }
 
 void APlayerCharacter::MoveForward(float InputValue)
 {
-	FVector ForwardDirection = GetActorForwardVector();
-	AddMovementInput(ForwardDirection, InputValue);//Pressing W will make the character move forward and S backwards according to the input value assigned in the project settings. (1.0, -1.0)
+	AddMovementInput(GetActorForwardVector(), InputValue);
 }
 
 void APlayerCharacter::MoveRight(float InputValue)
 {
-	FVector RightDirection = GetActorRightVector();
-	AddMovementInput(RightDirection, InputValue);//Pressing D will make the character move right and A left according to the input value assigned in the project settings. (1.0, -1.0)
+	AddMovementInput(GetActorRightVector(), InputValue);
 }
 
 void APlayerCharacter::Turn(float InputValue)
@@ -66,5 +67,102 @@ void APlayerCharacter::LookUp(float InputValue)
 
 void APlayerCharacter::Interact()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Object picked up!"));
+	if (HeldItem)
+	{
+		TraceForCustomer(); // Try to give item to a customer
+	}
+	else
+	{
+		TraceForFood(); // Try to pick up food
+	}
+}
+
+void APlayerCharacter::TraceForCustomer()
+{
+	FVector Start = Camera->GetComponentLocation();
+	FVector End = Start + (Camera->GetForwardVector() * 300.f);
+
+	FHitResult Hit;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params))
+	{
+		if (AFoodCustomer* Customer = Cast<AFoodCustomer>(Hit.GetActor()))
+		{
+			Customer->ReceiveFood(HeldItem);
+			HeldItem->Destroy();
+			HeldItem = nullptr;
+		}
+	}
+}
+
+
+
+void APlayerCharacter::TraceForFood()
+{
+	FVector Start = Camera->GetComponentLocation();
+	FVector End = Start + (Camera->GetForwardVector() * 300.f);
+
+	FHitResult Hit;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	if (GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params))
+	{
+		if (AFoodItem* HitFood = Cast<AFoodItem>(Hit.GetActor()))
+		{
+			AttachFoodToCamera(HitFood);
+		}
+	}
+}
+
+void APlayerCharacter::AttachFoodToCamera(AFoodItem* FoodItem)
+{
+	if (!FoodItem || !Camera) return;
+
+	FoodItem->AttachToComponent(Camera, FAttachmentTransformRules::SnapToTargetIncludingScale);
+	FoodItem->SetActorRelativeLocation(FVector(HoldDistance, -10.f, -30.f)); // Slight downward tilt for realism
+	HeldItem = FoodItem;
+
+	UE_LOG(LogTemp, Warning, TEXT("Picked up Food ID: %d"), FoodItem->FoodID);
+}
+
+void APlayerCharacter::DropHeldItem()
+{
+	if (HeldItem)
+	{
+		// Detach from camera
+		HeldItem->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+
+		// Move it back to its original position
+		HeldItem->SetActorTransform(HeldItem->OriginalTransform);
+
+		// Make sure it's visible and has collision again
+		HeldItem->SetActorHiddenInGame(false);
+		HeldItem->SetActorEnableCollision(true);
+
+		HeldItem = nullptr;
+	}
+}
+
+
+
+void APlayerCharacter::PauseGame()
+{
+	APlayerController* PC = GetController<APlayerController>();
+	if (!PC || PC->IsPaused()) return;
+
+	PC->SetPause(true);
+	PC->bShowMouseCursor = true;
+	PC->SetInputMode(FInputModeUIOnly());
+
+	if (PauseMenuWidgetClass)
+	{
+		PauseMenuInstance = CreateWidget<UPauseMenuWidget>(GetWorld(), PauseMenuWidgetClass);
+		if (PauseMenuInstance)
+		{
+			PauseMenuInstance->AddToViewport();
+		}
+	}
 }
